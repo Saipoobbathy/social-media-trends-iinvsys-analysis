@@ -1,0 +1,82 @@
+CREATE DATABASE IF NOT EXISTS social_media_db;
+USE social_media_db;
+
+CREATE TABLE IF NOT EXISTS posts (
+    Post_ID INT PRIMARY KEY,
+    Platform VARCHAR(50),
+    Kind VARCHAR(50),
+    Post_URL TEXT,
+    Views BIGINT,
+    Likes INT,
+    Comments INT,
+    Total_Interactions INT,
+    Engagement_Rate_Pct DECIMAL(10, 4),
+    Published_Timestamp DATETIME,
+    Published_Date DATE,
+    Day_of_Week VARCHAR(15),
+    Published_Hour INT,
+    Content_Type VARCHAR(100),
+    Content_Category VARCHAR(100),
+    Domain VARCHAR(100),
+    Hashtags TEXT,
+    Hashtag_Count INT
+);
+USE social_media_db;
+SELECT COUNT(*) AS total_posts FROM posts;
+SELECT * FROM posts LIMIT 10;
+DESCRIBE posts;
+SELECT 
+    Domain,
+    COUNT(*) AS total_posts,
+    ROUND(AVG(Views), 0) AS avg_views,
+    ROUND(AVG(Total_Interactions), 1) AS avg_interactions,
+    ROUND(AVG(Engagement_Rate_Pct), 2) AS avg_engagement_rate
+FROM posts
+GROUP BY Domain
+ORDER BY avg_engagement_rate DESC;
+
+-- B. Best Platform Comparison
+SELECT 
+    Platform,
+    COUNT(*) AS total_posts,
+    SUM(Views) AS total_views,
+    SUM(Likes) AS total_likes,
+    SUM(Comments) AS total_comments,
+    ROUND(AVG(Engagement_Rate_Pct), 2) AS avg_engagement_rate
+FROM posts
+GROUP BY Platform
+ORDER BY avg_engagement_rate DESC;
+
+-- C. Best Day of the Week to Post
+SELECT 
+    Day_of_Week,
+    COUNT(*) AS total_posts,
+    ROUND(AVG(Views), 0) AS avg_views,
+    ROUND(AVG(Engagement_Rate_Pct), 2) AS avg_engagement_rate
+FROM posts
+GROUP BY Day_of_Week
+ORDER BY avg_engagement_rate DESC;
+
+-- D. Best Hour of the Day to Post (0-23)
+SELECT 
+    Published_Hour,
+    COUNT(*) AS total_posts,
+    ROUND(AVG(Engagement_Rate_Pct), 2) AS avg_engagement_rate
+FROM posts
+GROUP BY Published_Hour
+ORDER BY avg_engagement_rate DESC
+LIMIT 5;
+
+-- E. Top 10 Performing Posts Overall
+SELECT 
+    Post_ID,
+    Platform,
+    Domain,
+    Views,
+    Likes,
+    Comments,
+    Engagement_Rate_Pct,
+    Post_URL
+FROM posts
+ORDER BY Engagement_Rate_Pct DESC
+LIMIT 10;
